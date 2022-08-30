@@ -16,7 +16,7 @@ public class UserController {
     @PostMapping("/join")
     public String join(@RequestParam String name) {
         User user = new User(name);
-        userService.join(user);
-        return "Success!";
+        Long id = userService.join(user);
+        return "Success! ID: " + id;
     }
 }

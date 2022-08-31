@@ -14,4 +14,10 @@ class UserTest {
         User user = new User("user");
         Assertions.assertThat(user.getAuthority()).isEqualTo(UserAuthority.ROLE_CLIENT);
     }
+
+    @Test
+    @DisplayName("단위테스트 실패 테스트케이스")
+    public void failure() {
+        Assertions.assertThat(1 == 2).isTrue();
+    }
 }

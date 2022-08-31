@@ -57,4 +57,17 @@ class UserServiceTest {
         //then
         Assertions.assertThat(e.getMessage()).isEqualTo("이미 존재하는 회원입니다.");
     }
+
+    @Test
+    @DisplayName("통합테스트 실패 테스트케이스")
+    public void failure() {
+        //given
+        User user = new User("user");
+
+        //when
+        Long id = userService.join(user);
+
+        //then
+        Assertions.assertThat(id).isEqualTo(0);
+    }
 }

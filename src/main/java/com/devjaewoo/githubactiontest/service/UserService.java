@@ -18,6 +18,10 @@ public class UserService {
             throw new IllegalArgumentException("유효한 회원명이 아닙니다.");
         }
 
+        if(userRepository.findByName(user.getName()).isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 회원입니다.");
+        }
+
         userRepository.save(user);
 
         return user.getId();

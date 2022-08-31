@@ -40,7 +40,7 @@ jobs:
           distribution: 'corretto'
 
       - name: Gradle build
-        run: chmod +x /.gradlew
+        run: chmod +x ./gradlew
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build

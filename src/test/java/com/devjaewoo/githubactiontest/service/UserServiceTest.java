@@ -23,7 +23,7 @@ class UserServiceTest {
     public void UserService_join_success() {
         //given
         User user = new User("user");
-        
+
         //when
         Long id = userService.join(user);
 

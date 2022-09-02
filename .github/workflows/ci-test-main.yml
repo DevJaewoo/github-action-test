@@ -1,0 +1,71 @@
+# ci-test-main.yml
+
+# workflow의 이름을 정의한다.
+name: 'ci-test-main'
+
+# workflow가 언제 동작할지 정의한다.
+# 이 workflow의 경우 main branch에 push 또는 pull_request 이벤트가 발생할 경우 동작한다.
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - 'main'
+
+# job은 사용자가 정한 플랫폼을 통해 step이라는 일련의 과정을 실행할 수 있다.
+# 여러 개의 job을 사용할 수도 있고, job끼리 정보 교환도 가능하다.
+jobs:
+  # test라는 job을 정의한다.
+  test:
+    # job의 이름을 정의한다.
+    name: Build and test project
+
+    # job이 실행될 환경을 정의한다.
+    runs-on: ubuntu-latest
+
+    # job 실행 중 필요한 서비스들을 정의한다.
+    # Docker Container로 설정할 수 있다.
+    # 이 프로젝트는 PostgreSQL을 사용했기 때문에 postgres 환경으로 구성했다.
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          # application.yml에서 DB를 test로 지정했었다.
+          POSTGRES_DB: test
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    # step에선 쉘 스크립트나 이미 만들어진 action 등을 사용할 수 있다.
+    steps:
+      # Github Acitons는 프로젝트를 CI 서버로 내려받아 특정 브랜치로 checkout하여 실행한다고 한다.
+      # 원래는 쉘 스크립트로 CI 서버, 코드 저장소 간 인증, 절차 등을 신경써서 일일이 작성해줘야 하지만,
+      # 다른 사람이 만들어둔 action이 이미 있기 때문에 코드 한 줄로 갖다 쓸 수 있다.
+      - uses: actions/checkout@v3
+
+      # 이 프로젝트는 JAVA 환경에서 동작하기 때문에 CI 서버 또한 JAVA 환경을 구성해줘야 한다.
+      # checkout과 마찬가지로 다른 사람이 만들어 둔 action이 있기 때문에 갖다 쓰면 된다.
+      - name: Setup JAVA
+        uses: actions/setup-java@v3
+        with:
+          # 프로젝트에서 corretto-17 JDK를 사용했기 때문에 그에 맞게 구성해줬다.
+          java-version: '17'
+          distribution: 'corretto'
+
+      # gradle build 진행 시 실행 가능한 파일이 아니라는 에러를 띄우며 fail이 나기 때문에 실행 권한을 줘야 한다.
+      - name: Add executable permission to gradlew
+        run: chmod +x ./gradlew
+
+      # gradle build 작업 안에 test 작업도 기본적으로 들어가있기 때문에 build만 해주면 된다.
+      # gradle build 작업도 다른 사람이 만들어 둔 action을 사용했다.
+      - name: Gradle build
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build

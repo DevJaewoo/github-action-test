@@ -18,6 +18,6 @@ class UserTest {
     @Test
     @DisplayName("단위테스트 실패 테스트케이스")
     public void failure() {
-        Assertions.assertThat(1 == 2).isTrue();
+        Assertions.assertThat(1 == 1).isTrue();
     }
 }

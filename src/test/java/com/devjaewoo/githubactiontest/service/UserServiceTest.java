@@ -68,6 +68,6 @@ class UserServiceTest {
         Long id = userService.join(user);
 
         //then
-        Assertions.assertThat(id).isEqualTo(0);
+        Assertions.assertThat(id).isGreaterThan(0);
     }
 }
